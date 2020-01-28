@@ -1,0 +1,71 @@
+---
+title: "Geog 210B - Lab 2"
+author: "Conor McMahon"
+date: "1/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)    # data frame handling
+library(janitor)      # cleaning data frame format
+library(kableExtra)   # table styling
+library(gtools)       # combinatorix
+
+```
+
+
+### 1) The probability of a dry summer is equal to 0.3, the probability of a wet summer is equal to 0.2, and the probability of a summer with normal precipitation is equal to 0.5. A climatologist observed the precipitation during three consecutive summers.
+
+#### a) Enumerate the sample space, and assign probabilities to each simple event. Do they add to one?
+
+With three summers that can be one of three outcomes (wet, dry, or normal), there are *3^3^ = 27* potential outcomes. If we call the wet/dry/normal character the random variable *prec*, and choose *prec* three times, the possible perumations are:
+
+```{r echo=F}
+
+prec_outcomes <- c('dry','wet','normal')
+prec_perm <- permutations(n=3, r=3,  # "3 choose 3"
+                                  v=prec_outcomes, repeats.allowed=T)
+
+prec_perm_df <- data.frame(First_Summer  = prec_perm[,1],
+                           Second_Summer = prec_perm[,2],
+                           Third_Summer  = prec_perm[,3],
+                           Num_Wet       = c(0,0,1,0,0,1,1,1,2,0,0,1,0,0,1,1,1,2,1,1,2,1,1,2,2,2,3),
+                           Num_Dry       = c(3,2,2,2,1,1,2,1,1,2,1,1,1,0,0,1,0,0,2,1,1,1,0,0,1,0,0))
+# Build a string-coded probability density function
+prob_map <- new.env(hash = TRUE, parent = emptyenv(), size = NA)
+prob_map[['dry']] <- 0.3
+prob_map[['wet']] <- 0.2
+prob_map[['normal']] <- 0.5
+
+prec_perm_df$Probability = prob_map[prec_perm_df$First_Summer]*
+                           prob_map[prec_perm_df$Second_Summer]*
+                           prob_map[prec_perm_df$Third_Summer]
+
+kable(prec_perm_df) %>% kable_styling()
+
+```
+
+Counting the outcomes above, we arrive at the following enumeration of the sample space (list of combinations and expected frequencies):
+
+```{r}
+
+prec_comb <- combinations(n=3, r=3, # "3 choose 3"
+                          v=prec_outcomes, repeats.allowed=T)
+
+prec_perm_df <- data.frame(Num_Wet   = c(0,0,1,0,1,2,0,1,2,3),
+                           Num_Dry   = c(3,2,2,1,1,1,0,0,0,0)
+                           )
+
+
+```
+
+
+
+
+### b. What is the probability of observing two dry summers?
+
+### c. What is the probability of observing at least two dry summers?
+
+### d. What is the probability of not observing a wet summer?
